@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Missie Q-Factory — Opdracht Intro Branche mbo 4 (2–3 lesuren)</title>
+<style>
+  :root {
+    --pink: #e6007e;
+    --pink-dark: #b80065;
+    --pink-light: #fdeaf5;
+    --ink: #111111;
+    --ink-soft: #333333;
+    --grey: #6d6d6d;
+    --bg: #faf7f9;
+    --white: #ffffff;
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(160deg, #111 0%, #2b0a1c 100%);
+    color: var(--white);
+    padding: 60px 24px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "♪ ♫ ♪";
+    position: absolute;
+    bottom: -15px;
+    right: 30px;
+    font-size: 90px;
+    opacity: 0.1;
+    letter-spacing: 15px;
+    color: var(--pink);
+  }
+  .badge {
+    display: inline-block;
+    background: var(--pink);
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .hero h1 { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 800; line-height: 1.2; }
+  .hero h1 span { color: var(--pink); }
+  .hero p { max-width: 640px; margin: 18px auto 0; font-size: 1.05rem; opacity: 0.92; }
+  .hero .meta {
+    margin-top: 26px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+  }
+  .meta span { background: rgba(230,0,126,0.18); border: 1px solid rgba(230,0,126,0.45); padding: 6px 14px; border-radius: 8px; }
+
+  /* ===== PROGRESSBAR ===== */
+  .progress-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--white);
+    box-shadow: 0 2px 12px rgba(17,17,17,0.12);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 10px;
+    background: var(--pink-light);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--pink), var(--ink));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+  .progress-label { font-weight: 700; font-size: 0.95rem; color: var(--pink-dark); white-space: nowrap; }
+
+  /* ===== LAYOUT ===== */
+  .container { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+  .intro-card {
+    background: var(--white);
+    border-left: 5px solid var(--pink);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 36px;
+    box-shadow: 0 3px 14px rgba(17,17,17,0.07);
+  }
+  .intro-card h2 { color: var(--pink-dark); font-size: 1.2rem; margin-bottom: 10px; }
+
+  /* ===== PHASE ACCORDIONS ===== */
+  .phase {
+    background: var(--white);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    box-shadow: 0 3px 14px rgba(17,17,17,0.06);
+    overflow: hidden;
+    border: 1px solid #eee4ea;
+    transition: border-color 0.3s;
+  }
+  .phase.done { border-color: var(--pink); }
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .phase-header:hover { background: #fdf3f8; }
+  .phase-num {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.25rem;
+    border: 2px solid var(--pink);
+  }
+  .phase.done .phase-num { background: var(--pink); }
+  .phase-title { flex: 1; }
+  .phase-title h3 { font-size: 1.1rem; }
+  .phase-title small { color: var(--grey); }
+  .toggle-arrow { font-size: 1.2rem; color: var(--pink); transition: transform 0.3s; }
+  .phase.open .toggle-arrow { transform: rotate(180deg); }
+  .phase-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .phase.open .phase-body { max-height: 2600px; }
+  .phase-body-inner { padding: 4px 24px 24px; border-top: 1px dashed #ecdce5; }
+  .phase-body-inner ul { margin: 14px 0 0 20px; }
+  .phase-body-inner li { margin-bottom: 8px; }
+  .time-chip {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--white);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+  }
+
+  /* ===== CHECKBOXES ===== */
+  .task {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .task:hover { background: var(--pink-light); }
+  .task input { width: 20px; height: 20px; accent-color: var(--pink); margin-top: 3px; flex-shrink: 0; cursor: pointer; }
+  .task.checked span { text-decoration: line-through; color: var(--grey); }
+
+  /* ===== TABLE ===== */
+  .scan-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.95rem; }
+  .scan-table th {
+    background: var(--ink);
+    color: var(--white);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 3px solid var(--pink);
+  }
+  .scan-table th:first-child { border-radius: 10px 0 0 0; }
+  .scan-table th:last-child { border-radius: 0 10px 0 0; }
+  .scan-table td {
+    border-bottom: 1px solid #eee4ea;
+    padding: 10px 14px;
+    vertical-align: top;
+  }
+  .scan-table td:first-child { font-weight: 700; white-space: nowrap; }
+  .scan-table textarea {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid #dcc9d3;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font: inherit;
+    resize: vertical;
+    background: #fbf8fa;
+  }
+  .scan-table textarea:focus { outline: 2px solid var(--pink); background: var(--white); }
+
+  /* ===== NOTE FIELD ===== */
+  .note-field {
+    width: 100%;
+    border: 1px solid #dcc9d3;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font: inherit;
+    min-height: 60px;
+    resize: vertical;
+    background: #fbf8fa;
+    margin-top: 14px;
+  }
+  .note-field:focus { outline: 2px solid var(--pink); background: var(--white); }
+  .save-hint { font-size: 0.8rem; color: var(--grey); margin-top: 6px; }
+
+  /* ===== SPECIAL BLOCKS ===== */
+  .brief-box {
+    background: var(--pink-light);
+    border-left: 4px solid var(--pink);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 16px;
+  }
+  .brief-box strong { color: var(--pink-dark); }
+  .swot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .swot-cell { border-radius: 10px; padding: 14px; border-top: 4px solid; }
+  .swot-cell h4 { margin-bottom: 6px; font-size: 0.95rem; }
+  .swot-cell textarea {
+    width: 100%;
+    border: none;
+    background: rgba(255,255,255,0.75);
+    border-radius: 8px;
+    min-height: 84px;
+    padding: 8px;
+    font: inherit;
+    resize: vertical;
+  }
+  .swot-cell textarea:focus { outline: 2px solid var(--pink); }
+  .swot-s { background: #fbeff5; border-color: var(--pink); } .swot-s h4 { color: var(--pink-dark); }
+  .swot-w { background: #f3f3f3; border-color: var(--ink); } .swot-w h4 { color: var(--ink); }
+  .swot-o { background: #fbeff5; border-color: var(--pink-dark); } .swot-o h4 { color: var(--pink-dark); }
+  .swot-t { background: #f3f3f3; border-color: #888; } .swot-t h4 { color: var(--grey); }
+
+  /* ===== FINISH SECTION ===== */
+  .finish {
+    background: linear-gradient(160deg, #111, #2b0a1c);
+    color: var(--white);
+    border-radius: var(--radius);
+    padding: 30px 30px;
+    margin-top: 40px;
+    text-align: center;
+    border-top: 5px solid var(--pink);
+  }
+  .finish h2 { font-size: 1.4rem; margin-bottom: 12px; }
+  .finish ul { text-align: left; display: inline-block; margin: 14px 0 20px 20px; }
+  .group-input {
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font: inherit;
+    background: rgba(255,255,255,0.12);
+    color: var(--white);
+    margin-bottom: 18px;
+  }
+  .group-input::placeholder { color: rgba(255,255,255,0.6); }
+  .finish button {
+    background: var(--pink);
+    color: var(--white);
+    border: none;
+    font: inherit;
+    font-weight: 800;
+    font-size: 1rem;
+    padding: 14px 34px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(230,0,126,0.35);
+    transition: transform 0.15s, background 0.15s;
+    margin: 0 8px 8px 0;
+  }
+  .finish button:hover { transform: translateY(-2px); background: var(--pink-dark); }
+  #finishOutput { margin-top: 18px; font-size: 1.05rem; font-weight: 700; min-height: 32px; }
+  #finishOutput.ok { color: #ff8ac4; }
+  .btn-secondary { background: transparent !important; border: 2px solid var(--pink) !important; box-shadow: none !important; font-weight: 600 !important; padding: 12px 24px !important; }
+  .btn-danger { background: transparent !important; border: 2px solid rgba(255,255,255,0.5) !important; box-shadow: none !important; font-weight: 600 !important; padding: 12px 24px !important; color: rgba(255,255,255,0.85) !important; }
+  .btn-danger:hover { border-color: #ff6b6b !important; color: #ff6b6b !important; background: transparent !important; }
+
+  /* ===== GENERATED REPORT (schermweergave) ===== */
+  #reportOutput { display: none; }
+  #reportOutput.show { display: block; }
+  .report-doc {
+    background: var(--white);
+    color: var(--ink);
+    border-radius: var(--radius);
+    padding: 30px 34px;
+    margin-top: 24px;
+    text-align: left;
+  }
+  .report-doc h3 { color: var(--pink-dark); font-size: 1.4rem; border-bottom: 3px solid var(--pink); padding-bottom: 8px; margin-bottom: 6px; }
+  .report-doc .report-meta { color: var(--grey); font-size: 0.9rem; margin-bottom: 18px; }
+  .report-doc h4 { color: var(--pink-dark); font-size: 1.05rem; margin: 18px 0 6px; }
+  .report-doc p { margin-bottom: 6px; white-space: pre-line; }
+  .report-doc .empty-note { color: var(--grey); font-style: italic; }
+  .sec-title { color: var(--ink); font-size: 1.15rem; margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 2px solid var(--ink); }
+  .subsec { margin-bottom: 10px; }
+  .subsec h4 { margin: 14px 0 4px; }
+
+  /* ===== PRINTFRAME (rand om elke geprinte pagina) ===== */
+  .print-bar { display: none; }
+
+  /* Print: alleen het rapport, doorlopende tekst, zwarte rand per pagina */
+  @media print {
+    @page { margin: 14mm 14mm; }
+    body.report-mode .hero,
+    body.report-mode .progress-sticky,
+    body.report-mode .intro-card,
+    body.report-mode .phase,
+    body.report-mode .finish h2,
+    body.report-mode .finish ul,
+    body.report-mode .finish .group-input,
+    body.report-mode .finish button,
+    body.report-mode #finishOutput,
+    body.report-mode footer { display: none !important; }
+    body.report-mode #reportOutput { display: block !important; }
+    body.report-mode .finish {
+      background: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      color: var(--ink) !important;
+    }
+    body.report-mode .report-doc {
+      border-radius: 0;
+      box-shadow: none;
+      margin-top: 0;
+      padding: 0;
+    }
+    body.report-mode .print-bar {
+      display: block;
+      position: fixed;
+      background: var(--ink);
+      z-index: 9999;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .pb-top { top: 0; left: 0; right: 0; height: 4mm; }
+    .pb-bottom { bottom: 0; left: 0; right: 0; height: 4mm; }
+    .pb-left { left: 0; top: 0; bottom: 0; width: 4mm; }
+    .pb-right { right: 0; top: 0; bottom: 0; width: 4mm; }
+    body { background: white; }
+    .hero, .finish { background: #111 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .report-doc h3, .report-doc h4 { page-break-after: avoid; break-after: avoid; }
+    .subsec { page-break-inside: avoid; break-inside: avoid; }
+    .report-doc p { orphans: 3; widows: 3; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Zwarte rand voor op elke geprinte pagina -->
+<div class="print-bar pb-top"></div>
+<div class="print-bar pb-bottom"></div>
+<div class="print-bar pb-left"></div>
+<div class="print-bar pb-right"></div>
+
+<header class="hero">
+  <div class="badge">Onderzoeksopdracht · Intro Branche · MBO niveau 4</div>
+  <h1>Missie <span>Q-Factory</span></h1>
+  <p>Ken je bestemming! Verdiep je in het grootste muziekmakerscentrum van Europa, voor de excursie begint.</p>
+  <div class="meta">
+    <span>Groepjes van 3–4</span>
+    <span>2–3 lesuren</span>
+    <span>Q-Factory, Amsterdam-Oost</span>
+  </div>
+</header>
+
+<div class="progress-sticky">
+  <div class="progress-label">Voortgang:</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressPct">0%</div>
+</div>
+
+<main class="container">
+
+  <div class="intro-card">
+    <h2>Mission briefing</h2>
+    <p>Jullie gaan op excursie naar <strong>Q-Factory</strong>: één multifunctioneel gebouw van 13.000 m² met drie concertzalen, veertig studio's, muziekopleidingen, een hotel en een café-restaurant. Maar straks ben jij eventmanager, en een professional loopt nergens blind binnen. Wie beheert de zaal? Wat is het verdienmodel? Wie zijn de doelgroepen?</p>
+    <p style="margin-top:10px;"><strong>Jullie opdracht:</strong> vink alle taken af en vul je bevindingen in (je invoer wordt automatisch bewaard in deze browser). Pitch de belangrijkste resultaten bij je docent en kom voorbereid naar de excursie met minimaal 1 vraag.</p>
+  </div>
+
+  <!-- FASE 1 -->
+  <section class="phase" data-phase="1">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <div class="phase-num">1</div>
+      <div class="phase-title">
+        <h3>Locatie-check: wat IS Q-Factory?</h3>
+        <small>Bron: q-factory.com</small>
+      </div>
+      <div class="toggle-arrow">▼</div>
+    </div>
+    <div class="phase-body"><div class="phase-body-inner">
+      <span class="time-chip">± 30 min</span>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Noem minimaal <strong>zes functies</strong> die het gebouw combineert (optreden, repeteren, opnemen, leren, slapen, eten, werken, huren…).</span></div>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Hoe groot is het complex en hoeveel bezoekers passen er in de <strong>Main Stage</strong> en de <strong>Kleine Zaal</strong>?</span></div>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Wie zit er (volgens de website/LinkedIn) achter de organisatie en hoe is het georganiseerd?</span></div>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Noteer bij elk antwoord de <strong>bron (URL)</strong> — een eventprofessional kan altijd aangeven wat ie weet en waarvan.</span></div>
+      <textarea class="note-field" data-save="fase1" placeholder="Jouw bevindingen fase 1 + bronvermelding…"></textarea>
+      <p class="save-hint">Je invoer wordt automatisch bewaard.</p>
+    </div></div>
+  </section>
+
+  <!-- FASE 2 -->
+  <section class="phase" data-phase="2">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <div class="phase-num">2</div>
+      <div class="phase-title">
+        <h3>De socials-scan</h3>
+        <small>Analyseer minimaal 3 platformen</small>
+      </div>
+      <div class="toggle-arrow">▼</div>
+    </div>
+    <div class="phase-body"><div class="phase-body-inner">
+      <span class="time-chip">± 60 min</span>
+      <table class="scan-table">
+        <tr><th>Aspect</th><th>Vragen</th><th>Jullie bevindingen</th></tr>
+        <tr><td>Tone of voice</td><td>Hoe spreekt Q-Factory het publiek aan? Formeel, los, trendy?</td><td><textarea data-save="soc1" placeholder="Vul in…"></textarea></td></tr>
+        <tr><td>Contentmix</td><td>Wat posten ze vooral: events, artiesten, backstage, huur, vacatures? Schat in %.</td><td><textarea data-save="soc2" placeholder="Vul in…"></textarea></td></tr>
+        <tr><td>Doelgroepen</td><td>Welke doelgroepen spreek je per platform aan?</td><td><textarea data-save="soc3" placeholder="Vul in…"></textarea></td></tr>
+        <tr><td>Activiteit</td><td>Hoe vaak posten ze? Hoeveel engagement?</td><td><textarea data-save="soc4" placeholder="Vul in…"></textarea></td></tr>
+        <tr><td>Kampioen-post</td><td>De post met de meeste engagement — waarom werkte die?</td><td><textarea data-save="soc5" placeholder="Vul in…"></textarea></td></tr>
+      </table>
+      <div class="brief-box"><strong>Extra sprong:</strong> vind één bericht van Q-Factory dat <em>níets</em> met muziek te maken heeft. Wat valt je op?</div>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Tabel ingevuld voor minimaal <strong>3 platformen</strong>.</span></div>
+    </div></div>
+  </section>
+
+  <!-- FASE 3 -->
+  <section class="phase" data-phase="3">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <div class="phase-num">3</div>
+      <div class="phase-title">
+        <h3>Het eventgezicht: wat draait er?</h3>
+        <small>Agenda + zakelijke pagina</small>
+      </div>
+      <div class="toggle-arrow">▼</div>
+    </div>
+    <div class="phase-body"><div class="phase-body-inner">
+      <span class="time-chip">± 45 min</span>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Kies <strong>één aankomend event</strong> en analyseer het als professional: doelgroep, programma, sfeer, impact van de locatie.</span></div>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Bekijk de <strong>zakelijke pagina</strong>: voor welke 3 soorten opdrachtgevers is Q-Factory interessant en waarom?</span></div>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Welke <strong>drie doelgroepen</strong> verdienen bij Q-Factory het meeste geld? Onderbouw.</span></div>
+      <textarea class="note-field" data-save="fase3" placeholder="Jouw bevindingen fase 3…"></textarea>
+      <p class="save-hint">Je invoer wordt automatisch bewaard.</p>
+    </div></div>
+  </section>
+
+  <!-- FASE 4 -->
+  <section class="phase" data-phase="4">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <div class="phase-num">4</div>
+      <div class="phase-title">
+        <h3>SWOT &amp; de kloof</h3>
+        <small>Analyse + advies</small>
+      </div>
+      <div class="toggle-arrow">▼</div>
+    </div>
+    <div class="phase-body"><div class="phase-body-inner">
+      <span class="time-chip">± 45 min</span>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s"><h4>S — Sterktes</h4><textarea data-save="swot_s" placeholder="Bijv. verblijfsfunctie, grootte, merkimago…"></textarea></div>
+        <div class="swot-cell swot-w"><h4>W — Zwaktes</h4><textarea data-save="swot_w" placeholder="Bijv. bereikbaarheid, ligging…"></textarea></div>
+        <div class="swot-cell swot-o"><h4>O — Kansen</h4><textarea data-save="swot_o" placeholder="Bijv. zakelijke markt, samenwerkingen…"></textarea></div>
+        <div class="swot-cell swot-t"><h4>T — Bedreigingen</h4><textarea data-save="swot_t" placeholder="Bijv. concurrentie: Paradiso, Melkweg, 013, TivoliVredenburg…"></textarea></div>
+      </div>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Leg je SWOT naast je socials-scan: <strong>welke sterke kansen worden onderbelicht</strong> op de socials?</span></div>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Schrijf je aanbeveling: wat zou jij als eventmanager doen?</span></div>
+      <textarea class="note-field" data-save="fase4" placeholder="Onze aanbeveling: …"></textarea>
+    </div></div>
+  </section>
+
+  <!-- PITCH VOORBEREIDING -->
+  <section class="phase" data-phase="5">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <div class="phase-num">5</div>
+      <div class="phase-title">
+        <h3>Pitch voorbereiden</h3>
+        <small>Voor de docent + één vraag voor de excursie</small>
+      </div>
+      <div class="toggle-arrow">▼</div>
+    </div>
+    <div class="phase-body"><div class="phase-body-inner">
+      <span class="time-chip">± 10 min</span>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Selecteer de <strong>belangrijkste resultaten</strong> uit jullie onderzoek en pitch die in max. 3 minuten bij je docent.</span></div>
+      <div class="task"><input type="checkbox" onchange="taskChanged(this)"><span>Formuleer <strong>minimaal 1 concrete vraag</strong> die je tijdens de excursie aan de gids of medewerker van Q-Factory stelt.</span></div>
+      <textarea class="note-field" data-save="pitch" placeholder="Onze pitch: belangrijkste resultaten + onze vraag voor de excursie…"></textarea>
+    </div></div>
+  </section>
+
+  <!-- FINISH -->
+  <section class="finish">
+    <h2>Briefing afronden</h2>
+    <ul>
+      <li><strong>Deliverable 1:</strong> onderzoeksrapport (max. 4 A4) met bronvermelding + jullie opvallendste ontdekking</li>
+      <li><strong>Deliverable 2:</strong> 3-minuten pitch voor de docent van de resultaten + tijdens de excursie één concrete vraag aan de gids</li>
+    </ul>
+    <input type="text" class="group-input" data-save="groep" placeholder="Naam van jullie groep…">
+    <div>
+      <button onclick="checkDone()">Briefing afronden</button>
+      <button class="btn-secondary" onclick="generateReport()">Rapport genereren</button>
+      <button class="btn-danger" onclick="resetForm()">Formulier wissen</button>
+    </div>
+    <div id="finishOutput"></div>
+    <div id="reportOutput"></div>
+  </section>
+
+</main>
+
+<footer>
+  Vak: Intro Branche · MBO niveau 4 · Excursie Q-Factory Amsterdam
+</footer>
+
+<script>
+  // Accordion
+  function togglePhase(header) {
+    header.parentElement.classList.toggle('open');
+  }
+  // Open fase 1 bij start
+  document.querySelector('.phase').classList.add('open');
+
+  // Checkbox: strike-through + fase kleurt
+  function taskChanged(cb) {
+    const task = cb.closest('.task');
+    task.classList.toggle('checked', cb.checked);
+    const phase = cb.closest('.phase');
+    const boxes = phase.querySelectorAll('.task input[type="checkbox"]');
+    const all = Array.from(boxes).every(b => b.checked);
+    phase.classList.toggle('done', all);
+    updateProgress();
+  }
+
+  // Voortgangsbalk
+  function updateProgress() {
+    const boxes = document.querySelectorAll('.task input[type="checkbox"]');
+    const total = boxes.length;
+    const done = Array.from(boxes).filter(b => b.checked).length;
+    const pct = Math.round(done / total * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '%';
+  }
+
+  // Auto-opslag (localStorage, per browser — sleutel verschilt per versie)
+  const KEY = 'qfactory-opdracht-3u';
+  function saveAll() {
+    const data = {};
+    document.querySelectorAll('[data-save]').forEach(el => data[el.dataset.save] = el.value);
+    document.querySelectorAll('.task input[type="checkbox"]').forEach((cb, i) => data['cb'+i] = cb.checked);
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
+  function loadAll() {
+    try {
+      const data = JSON.parse(localStorage.getItem(KEY) || '{}');
+      document.querySelectorAll('[data-save]').forEach(el => {
+        if (data[el.dataset.save]) el.value = data[el.dataset.save];
+      });
+      document.querySelectorAll('.task input[type="checkbox"]').forEach((cb, i) => {
+        if (data['cb'+i]) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
+      });
+    } catch(e) {}
+  }
+  document.addEventListener('input', saveAll);
+
+  // Formulier wissen
+  function resetForm() {
+    if (!confirm('Weet je zeker dat je alles wilt wissen? Alle uitgevulde velden en vinkjes worden verwijderd.')) return;
+    localStorage.removeItem(KEY);
+    document.querySelectorAll('[data-save]').forEach(el => el.value = '');
+    document.querySelectorAll('.task input[type="checkbox"]').forEach(cb => {
+      cb.checked = false;
+      cb.dispatchEvent(new Event('change'));
+    });
+    const out = document.getElementById('finishOutput');
+    out.textContent = 'Formulier gewist — succes met opnieuw beginnen!';
+    out.classList.remove('ok');
+    const rep = document.getElementById('reportOutput');
+    rep.classList.remove('show');
+    rep.innerHTML = '';
+    document.body.classList.remove('report-mode');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  // Afronding: toont het rapport direct
+  function checkDone() {
+    const boxes = document.querySelectorAll('.task input[type="checkbox"]');
+    const done = Array.from(boxes).filter(b => b.checked).length;
+    const out = document.getElementById('finishOutput');
+    if (done === boxes.length) {
+      out.textContent = 'Briefing volledig afgerond. Genereer nu jullie rapport, sla het op als pdf en mail het naar je docent.';
+      out.classList.add('ok');
+      buildReport(false);
+    } else {
+      out.textContent = 'Nog niet alle taken afgevinkt (' + done + '/' + boxes.length + '). Voltooi eerst alle fasen.';
+      out.classList.remove('ok');
+    }
+  }
+
+  // Rapportgenereren-knop: bouwt rapport en opent direct het printmenu
+  function generateReport() {
+    buildReport(true);
+    setTimeout(function() { window.print(); }, 500);
+  }
+
+  // Rapportgenerator
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function buildReport(fromButton) {
+    const vals = {};
+    document.querySelectorAll('[data-save]').forEach(el => vals[el.dataset.save] = el.value.trim());
+    const groep = vals['groep'] || '(naam groep onbekend)';
+    let warnings = [];
+    function sec(title, key) {
+      const v = vals[key] || '';
+      if (!v) warnings.push(title);
+      return '<div class="subsec"><h4>' + title + '</h4><p>' + (v ? esc(v) : '<span class="empty-note">(niet ingevuld)</span>') + '</p></div>';
+    }
+    let html = '<div class="report-doc">';
+    html += '<h3>Onderzoeksrapport Q-Factory</h3>';
+    html += '<p class="report-meta">Groep: ' + esc(groep) + ' &middot; Datum: ' + new Date().toLocaleDateString('nl-NL') + ' &middot; Vak: Intro Branche (mbo 4)</p>';
+    html += sec('1. Locatie-check: wat is Q-Factory?', 'fase1');
+    html += '<h3 class="sec-title">2. Socials-scan</h3>';
+    html += sec('Tone of voice', 'soc1');
+    html += sec('Contentmix', 'soc2');
+    html += sec('Doelgroepen', 'soc3');
+    html += sec('Activiteit', 'soc4');
+    html += sec('Kampioen-post', 'soc5');
+    html += '<h3 class="sec-title">3. Het eventgezicht: wat draait er?</h3>';
+    html += sec('Onze analyse', 'fase3');
+    html += '<h3 class="sec-title">4. SWOT &amp; de kloof</h3>';
+    html += sec('Sterktes (S)', 'swot_s');
+    html += sec('Zwaktes (W)', 'swot_w');
+    html += sec('Kansen (O)', 'swot_o');
+    html += sec('Bedreigingen (T)', 'swot_t');
+    html += sec('Onze aanbeveling', 'fase4');
+    html += '<h3 class="sec-title">5. Pitch &amp; vraag voor de excursie</h3>';
+    html += sec('Onze pitch en vraag', 'pitch');
+    html += '</div>';
+    const target = document.getElementById('reportOutput');
+    target.innerHTML = html;
+    target.classList.add('show');
+    if (warnings.length) {
+      const out = document.getElementById('finishOutput');
+      out.textContent = 'Let op: nog leeg in het rapport: ' + warnings.join(', ') + '.';
+      out.classList.remove('ok');
+    }
+    document.body.classList.add('report-mode');
+    target.scrollIntoView({behavior: 'smooth'});
+  }
+
+  loadAll();
+  updateProgress();
+</script>
+
+</body>
+</html>
